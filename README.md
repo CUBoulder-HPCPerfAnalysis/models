@@ -4,6 +4,14 @@ For this topic, we're starting from [Calotoiu, Hoefler, Poke, and Wolf, *Using A
 As an alternative to the cross-validation used in the above paper, we're considering fitting performance models using [l1-regularized regression](https://en.wikipedia.org/wiki/Least_squares#Lasso_method).
 This repository will be used for model fitting using [cvxopt](http://cvxopt.org), a high-level Python interface for convex optimization.
 
+## Examples
+* src/snes/examples/tutorials/ex48.c - 3D Hydrostatic Ice Flow Q_1 elements
+* src/ksp/ksp/examples/tutorials/ex49.c - 2D Elasticity Q_1 elements
+* [HPGMG](https://hpgmg.org) - 3D Poisson on deformed grid, Q_2 elements
+
+## Useful run-time options
+* `-pc_mg_log` - profiling information by level
+
 # Running on Janus
 
 First log into a compilation node.
