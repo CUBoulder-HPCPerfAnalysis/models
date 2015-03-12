@@ -15,7 +15,6 @@ def fit(basis, gamma, norm, data):
     y = cvxopt.matrix(data)
     Anumpy = numpy.array([b(x) for b in basis]).T
     A = cvxopt.matrix(Anumpy)
-    print(Anumpy.shape)
     u = variable(len(basis))
     res = A*u-y
     if norm == 1:
