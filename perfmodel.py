@@ -7,20 +7,17 @@ import scipy.signal
 
 def fit(basis, gamma, norm, data):
     """Represent data in basis by find coefficients u_i
-         min_{a} ||Σ_i u_i b_i(x) - data(x)|| + ᴦ||u||_norm
+         min_{a} ||Σ_i u_i b_i(x) - data(x)||_2^2 + ᴦ||u||_norm
        where basis[] is an array of functions of a single variable x.
     """
-    from cvxopt.modeling import op, variable, sum, dot
     x = data.index.values
     y = cvxopt.matrix(data)
     Anumpy = numpy.array([b(x) for b in basis]).T
     A = cvxopt.matrix(Anumpy)
-    u = variable(len(basis))
-    res = A*u-y
-    if norm == 1:
-        problem = op(sum(abs(res)) + gamma*sum(abs(u)))
-    problem.solve()
-    u = u.value
+    A /= numpy.sqrt(gamma)
+    y /= numpy.sqrt(gamma)
+    import l1regls
+    u = l1regls.l1regls(A,y)
     return u, Anumpy.dot(numpy.array(u))
 
 def main(args):
@@ -32,7 +29,7 @@ def main(args):
         return inner
     basis = []
     for i in [0,.5,1,2]:
-        for j in [0,.5,1,2]:
+        for j in [0,1,2]:
             basis += [f(i,j)]
 
     u, yu = fit(basis, args.gamma, 1, df['y1'])
