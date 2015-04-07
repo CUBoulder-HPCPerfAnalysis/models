@@ -46,3 +46,36 @@ As an example, I'm using the following script `runex48.sh`
 and submitting it with
 
     $ qsub runex48.sh
+
+# Model-Specific Registers
+
+Model-Specific Registers can be used to change hardware characteristics including prefetch policy.
+The cryptic register names (like `0x1a0`) are described in Intel's volume [3C: Systems Programming Guide](https://www-ssl.intel.com/content/dam/www/public/us/en/documents/manuals/64-ia-32-architectures-software-developer-vol-3c-part-3-manual.pdf).
+These registers can be manipulated on Linux using `rdmsr` and `wrmsr` from [msr-tools](https://01.org/msr-tools/overview).
+For [example](http://lists.mcs.anl.gov/pipermail/petsc-users/2010-January/005840.html),
+
+    # rdmsr -p 1 0x1a0
+    1364970489
+
+and flipping bit 9 (counting from 0 on the right) disables a type of hardware prefetch, so
+
+    # wrmsr -p 1 0x1a0 0x1364970689
+
+turns off prefetch and
+
+    # wrmsr -p 1 0x1a0 0x1364970489
+
+turns it back on again.
+
+# The `cache-interfere` program
+
+The `cache-interfere` program in this repository can be used to occupy some part of cache by repeatedly touching lines.
+Compile with
+
+    make CC=gcc CFLAGS='-std=c99 -O2 -Wall -Wextra' cache-interfere
+
+It works by `fork`ing and `exec`uting your application from the child while spinning in the parent.
+
+    Usage: ./cache-interfere [-s set_size] [-c cycles] app [args]
+
+The `set_size` is the number of bytes to keep in cache and `cycles` is a crude estimate of the number of clock cycles to spin before retouching the set.
